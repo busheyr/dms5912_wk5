@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>DMS5912 · Week 5</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 62.5%; height:100%; max-width:100vw; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { margin:0; height:100%; background:#ffffff; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size:1.8rem; line-height:1.8; color:#111; overflow:hidden; position:relative; }
+.background-dots { position:fixed; top:0; right:0; width:60%; opacity:0.15; pointer-events:none; z-index:0; }
+.rise-shell { height:100%; display:flex; flex-direction:column; position:relative; z-index:1; }
+.rise-shell__header { padding:1.8rem 3rem; background:#fff; border-bottom:1px solid #ececec; display:flex; align-items:center; justify-content:space-between; gap:2rem; }
+.rise-shell__title { font-size:2.2rem; font-weight:700; line-height:1.2; }
+.rise-shell__meta { font-size:1.5rem; color:#555; white-space:nowrap; }
+.rise-shell__body { flex:1; overflow-y:auto; padding:5rem 0; }
+.rise-page { width:100%; max-width:104rem; margin:0 auto; padding:0 3.2rem; }
+:root { --space-xs:1.4rem; --space-sm:2.2rem; --space-md:3.4rem; --space-lg:5rem; --space-xl:7rem; --blue:#007CFF; --green:#0b6b3a; --ink:#111; --muted:#60656f; --soft:#f5f8fb; --line:#dde4ee; }
+.rise-block { margin-block:var(--space-xl); padding:var(--space-lg); background:#fff; border-radius:.8rem; }
+.rise-block.alt { background:#f7f9fb; box-shadow:0 .4rem 1.6rem rgba(0,0,0,.04); }
+.rise-block.tint { background:#f4f9ff; box-shadow:0 .4rem 1.6rem rgba(0,0,0,.04); }
+.rise-block h1 { font-size:4rem; line-height:1.12; margin:0 0 var(--space-sm); }
+.rise-block h2 { font-size:2.8rem; margin:0 0 var(--space-sm); line-height:1.25; }
+.rise-block h3 { font-size:2rem; margin:0 0 1rem; line-height:1.35; }
+.rise-block h4 { font-size:1.8rem; margin:0 0 .6rem; line-height:1.35; }
+.rise-block p { margin:0 0 var(--space-sm); }
+.rise-block ul { margin:0 0 var(--space-sm); padding-left:2.4rem; }
+.rise-block li { margin:.6rem 0; }
+.cover-screen { position:fixed; inset:0; background:#fff; z-index:5000; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:2rem; transition:opacity .35s ease, visibility .35s ease; }
+.cover-screen.hidden { opacity:0; visibility:hidden; }
+.cover-title { font-size:3.6rem; line-height:1.15; font-weight:750; margin-bottom:3rem; max-width:78rem; }
+.cover-btn { padding:1.2rem 2.4rem; font-size:1.8rem; border-radius:.6rem; border:0; background:var(--blue); color:#fff; cursor:pointer; font-weight:700; transition:background .2s ease; }
+.cover-btn:hover { background:#0066d1; }
+.hero { border-top:.8rem solid var(--blue); background:linear-gradient(180deg,#fff,#f7fbff); }
+.callout { border-left:.6rem solid var(--blue); padding:1.8rem 2.2rem; background:#f4f9ff; border-radius:.4rem; margin:var(--space-sm) 0; font-weight:650; }
+.callout2 { text-align:center; font-size:2.3rem; line-height:1.6; color:#1a1a1a; max-width:76rem; margin:3.6rem auto; padding:2rem 1rem; position:relative; }
+.callout2::before { content:""; width:6rem; height:.3rem; background:var(--green); border-radius:1rem; display:block; margin:0 auto 2rem; }
+.circle-list { padding-left:0 !important; list-style:none; margin-top:2rem; display:grid; gap:1.2rem; }
+.circle-list li { display:flex; align-items:center; margin:0; }
+.circle-num { width:3.2rem; height:3.2rem; border-radius:50%; background:var(--blue); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; margin-right:1rem; flex:0 0 auto; }
+.split { display:grid; grid-template-columns:minmax(0,1fr) minmax(28rem,.8fr); gap:3rem; align-items:start; }
+.panel { border:1px solid var(--line); border-radius:.8rem; padding:2.2rem; background:#fff; }
+.panel.green { border-left:.5rem solid var(--green); }
+.grid-3, .grid-4, .grid-2 { display:grid; gap:1.8rem; margin-top:2rem; }
+.grid-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.grid-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.grid-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.mini-card { border:1px solid var(--line); border-radius:.8rem; padding:2rem; background:#fff; min-height:100%; }
+.mini-card h3, .mini-card h4 { color:#0d3155; }
+.reveal-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(23rem,1fr)); gap:1.6rem; margin-top:2rem; }
+.reveal-card { border:1px solid var(--line); border-radius:.8rem; background:#fff; overflow:hidden; }
+.reveal-btn { width:100%; border:0; background:#eef6ff; color:#10243a; padding:1.6rem; font-size:1.8rem; font-weight:700; text-align:left; cursor:pointer; }
+.reveal-content { display:none; padding:1.8rem; }
+.reveal-card.open .reveal-content { display:block; }
+.accordion { border:1px solid #d9e1ea; border-radius:.8rem; overflow:hidden; background:#fff; }
+.accordion-item + .accordion-item { border-top:1px solid #d9e1ea; }
+.accordion-header { background:#f7f9fb; padding:1.6rem 1.8rem; cursor:pointer; font-size:1.8rem; font-weight:700; }
+.accordion-content { display:none; padding:1.8rem; background:#fff; }
+.accordion-item.open .accordion-content { display:block; }
+.rise-tabs { display:flex; flex-wrap:wrap; gap:1rem; margin-top:1.6rem; }
+.tab-btn { padding:.9rem 1.5rem; border-radius:.7rem; border:1px solid #cbd7e5; background:#fff; cursor:pointer; font-size:1.6rem; font-weight:650; }
+.tab-btn.active { background:#eaf4ff; border-color:#7dbaff; color:#07315b; }
+.tab-content { display:none; margin-top:1.8rem; }
+.tab-content.active { display:block; }
+.card-sequence { position:relative; margin:3rem auto; width:100%; max-width:82rem; }
+.card-sequence::before { content:""; position:absolute; left:2rem; top:0; width:2px; height:100%; background:#d9e1ea; z-index:0; }
+.sequence-card { position:relative; background:#fff; border-radius:.8rem; padding:2.2rem 2.6rem; margin:2.4rem 0 2.4rem 4rem; box-shadow:0 4px 18px rgba(0,0,0,.07); border-left:.4rem solid var(--green); z-index:2; }
+.sequence-date { color:var(--green); font-weight:800; font-size:1.6rem; margin-bottom:.6rem; }
+.choice-block { display:grid; grid-template-columns:28rem 1fr; gap:2rem; align-items:start; }
+.choice-menu { display:grid; gap:1rem; }
+.choice-btn { border:1px solid #cbd7e5; background:#fff; text-align:left; padding:1.4rem 1.6rem; border-radius:.7rem; font-size:1.65rem; font-weight:700; cursor:pointer; }
+.choice-btn.active { border-color:var(--blue); background:#eaf4ff; }
+.choice-panel { display:none; }
+.choice-panel.active { display:block; }
+.comparison { display:grid; grid-template-columns:1fr 1fr; gap:1.8rem; margin-top:2rem; }
+.comparison .panel:first-child { border-top:.5rem solid #7a8a9a; }
+.comparison .panel:last-child { border-top:.5rem solid var(--green); }
+.quote-line { border-block:1px solid var(--line); padding:2.4rem 0; font-weight:700; color:#1b2d40; }
+.section-divider { text-align:center; background:#fff; border-top:.6rem solid var(--green); box-shadow:0 .4rem 1.6rem rgba(0,0,0,.04); }
+.section-divider h2 { margin-bottom:0; }
+.continue-wrap { width:100%; margin:3rem 0; }
+.continue-btn { width:100%; border:0; border-radius:.8rem; background:#006649; color:#fff; min-height:6.4rem; font-size:1.9rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 .4rem 1.6rem rgba(0,102,73,.18); transition:background .2s ease, transform .2s ease; }
+.continue-btn:hover { background:#00563e; transform:translateY(-1px); }
+.continue-btn:focus-visible { outline:.3rem solid #7dbaff; outline-offset:.3rem; }
+.template-note { color:var(--muted); font-size:1.6rem; }
+.code-note { display:block; margin-top:1rem; padding:1.4rem 1.6rem; border:1px dashed #cbd7e5; border-radius:.8rem; background:#fbfdff; color:#425466; font-size:1.55rem; }
+@media (max-width:850px) {
+  .rise-shell__header { align-items:flex-start; flex-direction:column; }
+  .split, .grid-2, .grid-3, .grid-4, .choice-block, .comparison { grid-template-columns:1fr; }
+  .rise-block { padding:3rem 2rem; margin-block:4rem; }
+  .rise-page { padding:0 1.8rem; }
+}
+.primary,.cover-btn{padding:1.15rem 2rem;border:0;border-radius:.6rem;background:var(--blue);color:#fff;cursor:pointer;font-size:1.7rem;font-weight:700}.primary:hover,.cover-btn:hover{background:#0066d1}.secondary{padding:1rem 1.5rem;border:1px solid #aebdcd;border-radius:.6rem;background:#fff;cursor:pointer;font-size:1.6rem;font-weight:650}.feedback{display:none;margin-top:1.6rem;padding:1.4rem 1.6rem;border-radius:.6rem;font-weight:650}.feedback.show{display:block}.feedback.correct{background:#e7f6ed;color:#07562d;border-left:.5rem solid var(--green)}.feedback.incorrect{background:#fff0f0;color:#7c1e1e;border-left:.5rem solid var(--red)}.assessment-actions{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.8rem}.matching-row,.matrix-row{display:grid;grid-template-columns:minmax(18rem,1fr) minmax(20rem,1fr);gap:1.5rem;align-items:center;margin:1rem 0}.matching-row select,.matrix-row select,.text-answer{width:100%;padding:1rem;border:1px solid #aebdcd;border-radius:.5rem;background:#fff;font:inherit}.matching-row,.matrix-row{grid-template-columns:1fr}
+:root{--red:#a32626} .rise-shell__body{scroll-behavior:smooth} .rise-block:first-child{margin-top:0}
+nav{display:flex;flex-wrap:wrap;gap:1rem} nav a{color:#075992;padding:.5rem 1rem;border:1px solid var(--line);border-radius:.5rem;text-decoration:none}
+figure{margin:2.5rem 0}figcaption{font-size:1.5rem;font-weight:750;letter-spacing:.04em;margin-bottom:1rem;color:#425466}
+iframe{width:100%;height:auto;aspect-ratio:4/3;border:1px solid var(--line);border-radius:.8rem;background:#f7f9fb}
+.media-link{font-size:1.4rem;color:#075992}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:1.6rem;line-height:1.6}th,td{text-align:left;vertical-align:top;padding:1.4rem;border-bottom:1px solid var(--line)}thead{background:#eaf4ff}tbody th{min-width:13rem}caption{text-align:left;font-weight:750;margin:2rem 0 1rem}
+details{border:1px solid var(--line);border-radius:.7rem;background:white;margin:1.2rem 0}summary{padding:1.6rem 2rem;cursor:pointer;font-weight:700;color:#0d3155}details p{padding:0 2rem 1rem;margin:0}.practice{margin-top:3rem;border-top:2px solid var(--line);padding-top:2.4rem}.matching-row{padding:1.4rem 0;border-bottom:1px solid var(--line)}.matching-row label{font-weight:500}.row-result{grid-column:1/-1;font-size:1.6rem;margin:0!important}.row-result:empty{display:none}.matching-row select{font-size:1.6rem}.source-note{overflow-wrap:anywhere}button,select,summary,a{touch-action:manipulation} :focus-visible{outline:3px solid #007cff;outline-offset:4px}h1,h2{overflow-wrap:break-word}
+@media(max-width:850px){.matching-row{grid-template-columns:1fr}.rise-shell__header{padding:1.4rem 1.8rem}.rise-shell__title{font-size:1.8rem}.rise-shell__body{padding-top:2rem}.rise-block h1{font-size:3rem}th,td{padding:1rem}.rise-shell__meta{white-space:normal}}
+@media print{body{overflow:visible;height:auto}.rise-shell,.rise-shell__body{display:block;height:auto;overflow:visible}header,nav,.practice,iframe,.cover-screen{display:none}details p{display:block}.rise-block{break-inside:avoid;margin:2rem 0;padding:2rem}.background-dots{display:none}}
+
+.section-divider h2{margin-bottom:2rem}.section-divider p{text-align:left}.reference-table{margin:2rem 0}.reference-table .table-wrap{padding:0 1.5rem 1.5rem}.table-wrap table{min-width:65rem}.practice{padding:2.5rem;background:#f4f9ff;border-radius:.8rem}.row-result{font-weight:600}.source-list{overflow-wrap:anywhere}.panel p:last-child{margin-bottom:0}.eyebrow{color:#526273;font-size:1.5rem;letter-spacing:.08em;font-weight:750}.rise-shell__body{min-height:0}nav a{background:#fff}summary:hover{background:#eef6ff}
+@media(max-width:600px){.practice{padding:1.5rem}.matching-row select{min-width:0}.rise-block h2{font-size:2.5rem}}
+</style></head>
+<body><svg aria-hidden="true" class="background-dots" viewBox="0 0 800 600">
+  <defs>
+    <pattern id="dots1" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="3" fill="#007CFF"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#dots1)" />
+</svg>
+<div class="rise-shell"><header class="rise-shell__header"><div class="rise-shell__title">DMS 5912 · Acute Care Pharmacology</div><div class="rise-shell__meta">Week 5</div></header><main class="rise-shell__body"><div class="rise-page">
+<section class="rise-block hero"><p class="eyebrow">WEEK 5 FACULTY LECTURE</p><h1>Neuro-Trauma, Cerebrovascular Emergencies &amp; Syncope Workup</h1><nav aria-label="Lesson sections"><a href="#section1">Section 1: Cerebral Edema &amp; Protection of Brain Perfusion</a><a href="#section2">Section 2: Urgent Reversal of Anticoagulants in Intracranial Hemorrhage</a><a href="#section3">Section 3: Vertigo Pharmacology &amp; Syncope Evaluation</a></nav></section>
+<section class="rise-block section-divider" id="section1"><h2>Section 1: Cerebral Edema &amp; Protection of Brain Perfusion</h2>
+<p>Severe traumatic brain injury (TBI) can produce secondary cerebral edema, impaired autoregulation and intracranial hypertension. An elevated intracranial pressure (ICP) reduces the pressure gradient available to perfuse the brain. Preventing hypoxia and hypotension remains essential while definitive neurocritical and neurosurgical care proceeds.</p>
+</section>
+<section class="rise-block tint"><h2>1.1 Cerebral Perfusion Pressure (CPP)</h2>
+<figure><figcaption>GRAPHIC 1  |  CPP = MAP − ICP</figcaption><iframe src="https://drive.google.com/file/d/1v-hor1XGIOU1cEKke5iRGTkSl0dRYEon/preview" title="GRAPHIC 1  |  CPP = MAP − ICP" loading="lazy" allowfullscreen></iframe><a class="media-link" href="https://drive.google.com/file/d/1v-hor1XGIOU1cEKke5iRGTkSl0dRYEon/preview" target="_blank" rel="noopener">Open graphic in a new tab</a></figure>
+<div class="callout">Clinical thresholds: The Brain Trauma Foundation recommends treating ICP above 22 mm Hg; a CPP goal of 60–70 mm Hg is generally recommended in severe TBI.</div><p>Clinical interpretation: MAP must be evaluated alongside measured ICP. A fixed MAP of 80–90 mm Hg is not a universal target; individualize to achieve CPP while avoiding excessive fluids and vasopressors.</p>
+</section>
+<section class="rise-block "><h2>1.2 Hyperosmolar Therapy: 3% Saline Versus Mannitol</h2>
+<figure><figcaption>GRAPHIC 2  |  HYPERTONIC SALINE VERSUS MANNITOL</figcaption><iframe src="https://drive.google.com/file/d/1h2iuKeffEXfhIT6egz8J9XK9i5LDgOf0/preview" title="GRAPHIC 2  |  HYPERTONIC SALINE VERSUS MANNITOL" loading="lazy" allowfullscreen></iframe><a class="media-link" href="https://drive.google.com/file/d/1h2iuKeffEXfhIT6egz8J9XK9i5LDgOf0/preview" target="_blank" rel="noopener">Open graphic in a new tab</a></figure>
+<div class="comparison">
+<div class="panel"><h3>3% hypertonic saline</h3><h4>Mechanism / pharmacodynamics</h4><p>Raises serum tonicity; draws water from cerebral tissue into vascular compartment.</p><h4>Hemodynamic effects</h4><p>May expand intravascular volume; often favored with hypotension risk.</p><h4>Monitoring / precautions</h4><p>Trend serum Na+, Cl−, renal function and fluid balance. No universal mandatory sodium target of 145–155 mEq/L.</p></div>
+<div class="panel"><h3>20% mannitol</h3><h4>Mechanism / pharmacodynamics</h4><p>Osmotic agent that reduces brain water and promotes osmotic diuresis.</p><h4>Hemodynamic effects</h4><p>Can worsen volume depletion and hypotension, particularly in hemorrhagic shock.</p><h4>Monitoring / precautions</h4><p>Monitor urine output, kidney function, volume status and osmolar gap; avoid in clinically important hypovolemia.</p></div>
+</div>
+<details><summary>Barrier reflection coefficient:</summary><p>Hypertonic saline is often modeled with a reflection coefficient near 1.0 and mannitol near 0.9 across an intact blood–brain barrier; these are idealized values, not literal percentages of drug retained.</p></details><details><summary>Treatment selection:</summary><p>Use clinical context, local protocols and serial ICP/neurologic assessments. Hyperosmolar therapy treats cerebral swelling; it does not replace hemorrhage control or reversal of herniation causes.</p></details>
+</section>
+<section class="rise-block alt"><h2>1.3 Hemodynamic Support in Brain and Spinal Cord Injury</h2>
+<div class="grid-2"><div class="panel"><p>Norepinephrine: A commonly used vasopressor for MAP support after adequate volume assessment, with careful evaluation of cardiac output and peripheral perfusion.</p></div><div class="panel"><p>Phenylephrine: Pure alpha-adrenergic vasoconstriction may cause reflex bradycardia and reduce cardiac output in selected patients.</p></div></div><div class="callout">Acute traumatic spinal cord injury: The 2024 guideline suggests augmenting MAP to a lower bound of 75–80 mm Hg, without actively augmenting above an upper bound of 90–95 mm Hg, for 3–7 days; certainty is low.</div>
+</section>
+<section class="rise-block section-divider" id="section2"><h2>Section 2: Urgent Reversal of Anticoagulants in Intracranial Hemorrhage</h2>
+<p>Anticoagulant-associated intracranial hemorrhage (ICH) is a time-sensitive emergency. Immediately discontinue the anticoagulant, establish the agent and last dose, obtain appropriate coagulation studies, and coordinate urgent neurocritical care, neurosurgery, pharmacy and blood bank support. Reversal is initiated without waiting for all laboratory results when clinical indications are clear.</p>
+</section>
+<section class="rise-block "><h2>2.1 Anticoagulant-Specific Reversal</h2>
+<figure><figcaption>GRAPHIC 3  |  ANTICOAGULANT REVERSAL PATHWAYS</figcaption><iframe src="https://drive.google.com/file/d/1F7emJ6xTZFvRcD4l7bDYzVrPdpHr4nv4/preview" title="GRAPHIC 3  |  ANTICOAGULANT REVERSAL PATHWAYS" loading="lazy" allowfullscreen></iframe><a class="media-link" href="https://drive.google.com/file/d/1F7emJ6xTZFvRcD4l7bDYzVrPdpHr4nv4/preview" target="_blank" rel="noopener">Open graphic in a new tab</a></figure>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Anticoagulant reversal reference"><table><thead><tr><th scope="col">Agent</th><th scope="col">Preferred / commonly used response</th><th scope="col">Key precautions</th></tr></thead><tbody><tr><th scope="row">Warfarin</th><td>4-factor PCC, often 25–50 units/kg IV based on INR and product protocol, plus vitamin K 10 mg IV.</td><td>Use IV vitamin K concurrently to sustain reversal as PCC factors clear; repeat INR to confirm correction.</td></tr><tr><th scope="row">Apixaban / rivaroxaban</th><td>4-factor PCC may be considered under current local institutional protocols.</td><td>Andexanet alfa (Andexxa) was withdrawn from U.S. commercial sale after December 22, 2025; reassess institution-specific options and thrombosis risk.</td></tr><tr><th scope="row">Dabigatran</th><td>Idarucizumab 5 g IV (two 2.5-g doses).</td><td>Verify exposure and timing; reassess clinical bleeding and renal function.</td></tr></tbody></table></div>
+<div class="practice assessment"><h3>Match the reversal response to the anticoagulant</h3><div class="matching-row" data-answer="2" data-explanation="Verify exposure and timing; reassess clinical bleeding and renal function."><label for="match-1-2">Idarucizumab 5 g IV (two 2.5-g doses).</label><select id="match-1-2" aria-describedby="match-1-2-feedback"><option value="">Choose…</option><option value="0">Warfarin</option><option value="1">Apixaban / rivaroxaban</option><option value="2">Dabigatran</option></select><p id="match-1-2-feedback" class="row-result"></p></div><div class="matching-row" data-answer="1" data-explanation="Andexanet alfa (Andexxa) was withdrawn from U.S. commercial sale after December 22, 2025; reassess institution-specific options and thrombosis risk."><label for="match-1-1">4-factor PCC may be considered under current local institutional protocols.</label><select id="match-1-1" aria-describedby="match-1-1-feedback"><option value="">Choose…</option><option value="0">Warfarin</option><option value="1">Apixaban / rivaroxaban</option><option value="2">Dabigatran</option></select><p id="match-1-1-feedback" class="row-result"></p></div><div class="matching-row" data-answer="0" data-explanation="Use IV vitamin K concurrently to sustain reversal as PCC factors clear; repeat INR to confirm correction."><label for="match-1-0">4-factor PCC, often 25–50 units/kg IV based on INR and product protocol, plus vitamin K 10 mg IV.</label><select id="match-1-0" aria-describedby="match-1-0-feedback"><option value="">Choose…</option><option value="0">Warfarin</option><option value="1">Apixaban / rivaroxaban</option><option value="2">Dabigatran</option></select><p id="match-1-0-feedback" class="row-result"></p></div><div class="assessment-actions"><button class="primary check" type="button">Check matches</button><button class="secondary reset" type="button">Reset activity</button></div><div class="feedback" role="status" aria-live="polite"></div></div>
+<ul><li>Clinical priorities: Avoid delays to imaging, stabilization and neurosurgical evaluation. Reversal decisions depend on drug exposure, last dose, renal function and whether hemorrhage is life threatening.</li><li>Safety: Procoagulant therapies can increase thromboembolic risk; follow local product labeling and anticoagulation reversal pathways.</li></ul>
+</section>
+<section class="rise-block section-divider" id="section3"><h2>Section 3: Vertigo Pharmacology &amp; Syncope Evaluation</h2>
+</section>
+<section class="rise-block tint"><h2>3.1 Central Versus Peripheral Vertigo</h2>
+<p>Acute dizziness should be categorized by timing, triggers and examination findings. Posterior circulation stroke may present without obvious limb weakness. Red flags include vertical or direction-changing nystagmus, new diplopia or dysarthria, marked gait/truncal ataxia and other focal neurologic abnormalities.</p>
+<figure><figcaption>GRAPHIC 4  |  ACUTE VESTIBULAR SYNDROME SAFETY ASSESSMENT</figcaption><iframe src="https://drive.google.com/file/d/1H_z9CpLr4gXaicr6Z9tm7GrIQ_HyOhKh/preview" title="GRAPHIC 4  |  ACUTE VESTIBULAR SYNDROME SAFETY ASSESSMENT" loading="lazy" allowfullscreen></iframe><a class="media-link" href="https://drive.google.com/file/d/1H_z9CpLr4gXaicr6Z9tm7GrIQ_HyOhKh/preview" target="_blank" rel="noopener">Open graphic in a new tab</a></figure>
+<p>The HINTS examination is appropriate only in the correct acute vestibular syndrome population and when performed by appropriately trained clinicians. A concerning or equivocal examination warrants stroke evaluation. For benign paroxysmal positional vertigo (BPPV), canalith repositioning maneuvers are preferred over routine long-term suppressants.</p>
+</section>
+<section class="rise-block "><h2>3.2 Drugs Used for Vertigo and Nausea</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Vertigo medication reference"><table><thead><tr><th scope="col">Class / examples</th><th scope="col">Action</th><th scope="col">Clinical role / cautions</th></tr></thead><tbody><tr><th scope="row">H1 antihistamines: meclizine; diphenhydramine</th><td>Reduce vestibular signaling; often anticholinergic.</td><td>Short-term symptom relief in selected peripheral disorders; sedation, anticholinergic toxicity, delirium/fall risk, especially older adults.</td></tr><tr><th scope="row">Benzodiazepines: diazepam; lorazepam</th><td>CNS depression and vestibular suppression via GABA-A signaling.</td><td>Reserve for limited rescue use; sedation, respiratory depression and falls; may impede vestibular compensation.</td></tr><tr><th scope="row">5-HT3 antagonist: ondansetron</th><td>Blocks serotonin-mediated emetic signaling.</td><td>Antiemetic with limited sedation; dose-dependent QT prolongation; correct electrolyte abnormalities.</td></tr><tr><th scope="row">D2 antagonists: metoclopramide; prochlorperazine</th><td>Block dopamine-mediated nausea signaling.</td><td>Useful for migraine-associated nausea; akathisia, dystonia, sedation and QT concerns.</td></tr></tbody></table></div>
+<div class="practice assessment"><h3>Match the clinical role and cautions to the drug class</h3><div class="matching-row" data-answer="3" data-explanation="Block dopamine-mediated nausea signaling."><label for="match-2-3">Useful for migraine-associated nausea; akathisia, dystonia, sedation and QT concerns.</label><select id="match-2-3" aria-describedby="match-2-3-feedback"><option value="">Choose…</option><option value="0">H1 antihistamines: meclizine; diphenhydramine</option><option value="1">Benzodiazepines: diazepam; lorazepam</option><option value="2">5-HT3 antagonist: ondansetron</option><option value="3">D2 antagonists: metoclopramide; prochlorperazine</option></select><p id="match-2-3-feedback" class="row-result"></p></div><div class="matching-row" data-answer="2" data-explanation="Blocks serotonin-mediated emetic signaling."><label for="match-2-2">Antiemetic with limited sedation; dose-dependent QT prolongation; correct electrolyte abnormalities.</label><select id="match-2-2" aria-describedby="match-2-2-feedback"><option value="">Choose…</option><option value="0">H1 antihistamines: meclizine; diphenhydramine</option><option value="1">Benzodiazepines: diazepam; lorazepam</option><option value="2">5-HT3 antagonist: ondansetron</option><option value="3">D2 antagonists: metoclopramide; prochlorperazine</option></select><p id="match-2-2-feedback" class="row-result"></p></div><div class="matching-row" data-answer="1" data-explanation="CNS depression and vestibular suppression via GABA-A signaling."><label for="match-2-1">Reserve for limited rescue use; sedation, respiratory depression and falls; may impede vestibular compensation.</label><select id="match-2-1" aria-describedby="match-2-1-feedback"><option value="">Choose…</option><option value="0">H1 antihistamines: meclizine; diphenhydramine</option><option value="1">Benzodiazepines: diazepam; lorazepam</option><option value="2">5-HT3 antagonist: ondansetron</option><option value="3">D2 antagonists: metoclopramide; prochlorperazine</option></select><p id="match-2-1-feedback" class="row-result"></p></div><div class="matching-row" data-answer="0" data-explanation="Reduce vestibular signaling; often anticholinergic."><label for="match-2-0">Short-term symptom relief in selected peripheral disorders; sedation, anticholinergic toxicity, delirium/fall risk, especially older adults.</label><select id="match-2-0" aria-describedby="match-2-0-feedback"><option value="">Choose…</option><option value="0">H1 antihistamines: meclizine; diphenhydramine</option><option value="1">Benzodiazepines: diazepam; lorazepam</option><option value="2">5-HT3 antagonist: ondansetron</option><option value="3">D2 antagonists: metoclopramide; prochlorperazine</option></select><p id="match-2-0-feedback" class="row-result"></p></div><div class="assessment-actions"><button class="primary check" type="button">Check matches</button><button class="secondary reset" type="button">Reset activity</button></div><div class="feedback" role="status" aria-live="polite"></div></div>
+</section>
+<section class="rise-block alt"><h2>3.3 Syncope: Medication Review and High-Risk Screen</h2>
+<p>Syncope is transient loss of consciousness from global cerebral hypoperfusion with prompt recovery. Evaluation focuses on unstable arrhythmia, structural cardiac disease, pulmonary embolism when suspected, and other immediately dangerous causes, while considering reflex and orthostatic mechanisms.</p>
+<figure><figcaption>GRAPHIC 5  |  SYNCOPE SAFETY SCREEN</figcaption><iframe src="https://drive.google.com/file/d/18MgEAQxolZ8kI76kaFovulMXi-lwYoPD/preview" title="GRAPHIC 5  |  SYNCOPE SAFETY SCREEN" loading="lazy" allowfullscreen></iframe><a class="media-link" href="https://drive.google.com/file/d/18MgEAQxolZ8kI76kaFovulMXi-lwYoPD/preview" target="_blank" rel="noopener">Open graphic in a new tab</a></figure>
+<div class="callout">High-risk findings: Exertional syncope, abnormal ECG, known structural heart disease, chest pain, dyspnea, palpitations, significant injury or persistent hemodynamic instability.</div><details><summary>First-line workup:</summary><p>History (including witness account), physical examination, vital signs, 12-lead ECG, orthostatic measurements when appropriate, and targeted rather than indiscriminate tests.</p></details><details><summary>Medication triggers:</summary><p>Alpha-1 blockers such as tamsulosin, antihypertensive vasodilators, diuretics, beta-blockers, nondihydropyridine calcium-channel blockers and selected antiarrhythmics.</p></details>
+</section>
+<section class="rise-block source-note"><h2>Reference Notes</h2>
+<p>Teaching updates verified November 2026: Brain Trauma Foundation severe TBI guidance (ICP &gt;22 mm Hg; CPP 60–70 mm Hg); Neurocritical Care Society cerebral edema guideline (2020); acute SCI hemodynamic guideline (2024); AHA/ASA ICH guidance (2022); FDA Andexxa safety communication (December 2025); SAEM GRACE-3 acute dizziness guidance (2023). Medication dosing is educational and must be checked against patient factors, current product labeling and institutional policies.</p>
+<h3>Selected Sources</h3>
+<p class="source-list"><a href="https://braintrauma.org/coma/guidelines/severe-tbi" target="_blank" rel="noopener">https://braintrauma.org/coma/guidelines/severe-tbi</a></p>
+<p class="source-list"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7272487/" target="_blank" rel="noopener">https://pmc.ncbi.nlm.nih.gov/articles/PMC7272487/</a></p>
+<p class="source-list"><a href="https://pubmed.ncbi.nlm.nih.gov/38526923/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/38526923/</a></p>
+<p class="source-list"><a href="https://www.ahajournals.org/doi/10.1161/STR.0000000000000407" target="_blank" rel="noopener">https://www.ahajournals.org/doi/10.1161/STR.0000000000000407</a></p>
+<p class="source-list"><a href="https://www.fda.gov/safety/medical-product-safety-information/update-safety-andexxa-astrazeneca-fda-safety-communication" target="_blank" rel="noopener">https://www.fda.gov/safety/medical-product-safety-information/update-safety-andexxa-astrazeneca-fda-safety-communication</a></p>
+<p class="source-list"><a href="https://www.saem.org/publications/grace/grace-3" target="_blank" rel="noopener">https://www.saem.org/publications/grace/grace-3</a></p>
+</section>
+</div></main></div>
+<script>
+// Local assessment state; each activity can be retried independently.
+document.querySelectorAll('.assessment').forEach(block => {
+ const rows = [...block.querySelectorAll('.matching-row')];
+ const box = block.querySelector('.feedback');
+ function clear() {
+  box.className = 'feedback'; box.textContent = '';
+  rows.forEach(row => {
+   row.querySelector('.row-result').textContent = '';
+   row.querySelector('select').removeAttribute('aria-invalid');
+  });
+ }
+ block.querySelector('.check').addEventListener('click', () => {
+  clear();
+  const missing = rows.find(row => row.querySelector('select').value === '');
+  if (missing) {
+   box.className = 'feedback show incorrect';
+   box.textContent = 'Complete every match before checking.';
+   missing.querySelector('select').focus(); return;
+  }
+  let count = 0;
+  rows.forEach(row => {
+   const select = row.querySelector('select');
+   const correct = select.value === row.dataset.answer;
+   if (correct) count++;
+   select.setAttribute('aria-invalid', String(!correct));
+   row.querySelector('.row-result').textContent = correct
+    ? 'Correct. ' + row.dataset.explanation
+    : 'Review the reference above, then try this match again.';
+  });
+  box.className = 'feedback show ' + (count === rows.length ? 'correct' : 'incorrect');
+  box.textContent = count + ' of ' + rows.length + ' correct.';
+ });
+ block.querySelector('.reset').addEventListener('click', () => {
+  rows.forEach(row => row.querySelector('select').value = '');
+  clear(); rows[0].querySelector('select').focus();
+ });
+ rows.forEach(row => row.querySelector('select').addEventListener('change', clear));
+});
+</script>
+</body></html>
